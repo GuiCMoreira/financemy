@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: caixa-postgres
+    environment:
+      POSTGRES_USER: caixa
+      POSTGRES_PASSWORD: caixa
+      POSTGRES_DB: caixa
+    ports:
+      # 5434 no host para não conflitar com um Postgres já instalado
+      - "5434:5432"
+    volumes:
+      - caixa-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caixa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  caixa-pgdata:

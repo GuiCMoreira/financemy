@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7: a URL de conexão não mora mais aqui — ver prisma.config.ts (CLI)
+// e src/server/db.ts (runtime, via driver adapter).
+datasource db {
+  provider = "postgresql"
+}
+
+enum TipoConta {
+  CORRENTE
+  POUPANCA
+  DINHEIRO
+  CARTAO
+  INVESTIMENTO
+}
+
+enum TipoMovimento {
+  ENTRADA
+  SAIDA
+}
+
+enum StatusLancamento {
+  PREVISTO
+  EFETIVADO
+  ATRASADO
+}
+
+model Conta {
+  id            String    @id @default(cuid())
+  nome          String
+  tipo          TipoConta
+  saldoInicial  Int       @default(0) // centavos
+  diaFechamento Int? // só cartão
+  diaVencimento Int? // só cartão
+  limite        Int? // só cartão, centavos
+  ativa         Boolean   @default(true)
+  criadaEm      DateTime  @default(now())
+
+  lancamentos     Lancamento[]
+  parcelamentos   Parcelamento[]
+  recorrencias    Recorrencia[]
+  antecipacoes    Antecipacao[]
+  transferSaida   Transferencia[] @relation("origem")
+  transferEntrada Transferencia[] @relation("destino")
+}
+
+model Categoria {
+  id             String        @id @default(cuid())
+  nome           String
+  tipo           TipoMovimento
+  cor            String        @default("#8A19D6")
+  categoriaPai   Categoria?    @relation("hierarquia", fields: [categoriaPaiId], references: [id])
+  categoriaPaiId String?
+  filhas         Categoria[]   @relation("hierarquia")
+  ativa          Boolean       @default(true)
+
+  lancamentos   Lancamento[]
+  parcelamentos Parcelamento[]
+  recorrencias  Recorrencia[]
+
+  @@index([tipo, ativa])
+}
+
+model Pessoa {
+  id       String   @id @default(cuid())
+  nome     String
+  ehDono   Boolean  @default(false)
+  ativa    Boolean  @default(true)
+  criadaEm DateTime @default(now())
+
+  lancamentos   Lancamento[]
+  parcelamentos Parcelamento[]
+  pagamentos    Pagamento[]
+}
+
+/// A unidade central do sistema. Tudo que entra ou sai é um Lancamento;
+/// parcelamento e recorrência são geradores, não tipos separados.
+model Lancamento {
+  id          String           @id @default(cuid())
+  descricao   String
+  valor       Int // centavos, sempre positivo — a direção vem de `tipo`
+  tipo        TipoMovimento
+  data        String // YYYY-MM-DD
+  competencia String // YYYY-MM
+  status      StatusLancamento @default(PREVISTO)
+
+  conta   Conta  @relation(fields: [contaId], references: [id])
+  contaId String
+
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId String?
+
+  pessoa   Pessoa? @relation(fields: [pessoaId], references: [id])
+  pessoaId String?
+
+  parcelamento   Parcelamento? @relation(fields: [parcelamentoId], references: [id], onDelete: Cascade)
+  parcelamentoId String?
+  numeroParcela  Int?
+  totalParcelas  Int?
+
+  recorrencia   Recorrencia? @relation(fields: [recorrenciaId], references: [id], onDelete: Cascade)
+  recorrenciaId String?
+
+  transferencia   Transferencia? @relation(fields: [transferenciaId], references: [id], onDelete: Cascade)
+  transferenciaId String?
+
+  criadoEm DateTime @default(now())
+
+  @@index([competencia, contaId])
+  @@index([categoriaId])
+  @@index([pessoaId])
+  @@index([status])
+}
+
+model Parcelamento {
+  id             String @id @default(cuid())
+  descricao      String
+  valorParcela   Int
+  numeroParcelas Int
+  dataInicio     String
+
+  conta       Conta      @relation(fields: [contaId], references: [id])
+  contaId     String
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId String?
+  pessoa      Pessoa?    @relation(fields: [pessoaId], references: [id])
+  pessoaId    String?
+
+  lancamentos Lancamento[]
+  antecipacao Antecipacao?
+  criadoEm    DateTime     @default(now())
+
+  @@index([pessoaId])
+}
+
+model Recorrencia {
+  id         String        @id @default(cuid())
+  descricao  String
+  valor      Int
+  tipo       TipoMovimento
+  diaDoMes   Int
+  dataInicio String
+  dataFim    String?
+  ativa      Boolean       @default(true)
+
+  conta       Conta      @relation(fields: [contaId], references: [id])
+  contaId     String
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId String?
+
+  lancamentos Lancamento[]
+}
+
+model Transferencia {
+  id    String @id @default(cuid())
+  data  String
+  valor Int
+
+  contaOrigem    Conta  @relation("origem", fields: [contaOrigemId], references: [id])
+  contaOrigemId  String
+  contaDestino   Conta  @relation("destino", fields: [contaDestinoId], references: [id])
+  contaDestinoId String
+
+  lancamentos Lancamento[]
+  criadaEm    DateTime     @default(now())
+}
+
+/// Generalização da "rolagem de fatura": contratar crédito para cobrir uma
+/// obrigação. Guarda o bruto e o líquido; a taxa é derivada, nunca configurada.
+model Antecipacao {
+  id           String @id @default(cuid())
+  data         String
+  valorBruto   Int // o que foi contratado
+  valorLiquido Int // o que foi recebido
+
+  conta   Conta  @relation(fields: [contaId], references: [id])
+  contaId String
+
+  parcelamento   Parcelamento? @relation(fields: [parcelamentoId], references: [id])
+  parcelamentoId String?       @unique
+
+  criadaEm DateTime @default(now())
+}
+
+model Pagamento {
+  id       String   @id @default(cuid())
+  pessoa   Pessoa   @relation(fields: [pessoaId], references: [id])
+  pessoaId String
+  valor    Int
+  data     String
+  criadoEm DateTime @default(now())
+
+  @@index([pessoaId])
+}
