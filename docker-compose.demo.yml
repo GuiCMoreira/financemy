@@ -1,0 +1,35 @@
+# Sobe banco e aplicação juntos, com schema aplicado e dados de demonstração.
+#
+#   docker compose -f docker-compose.demo.yml up
+#
+# Para uso real, remova SEED_DEMO e troque as senhas.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: caixa
+      POSTGRES_PASSWORD: caixa
+      POSTGRES_DB: caixa
+    volumes:
+      - caixa-demo-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caixa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  caixa:
+    build: .
+    environment:
+      DATABASE_URL: "postgresql://caixa:caixa@postgres:5432/caixa?schema=public"
+      SEED_DEMO: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  caixa-demo-pgdata:
