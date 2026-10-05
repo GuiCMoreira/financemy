@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* Modo escuro por classe no <html>, controlado pelo botão do cabeçalho. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/**
+ * O sistema separa superfícies por contraste de cor, não por elevação: cards
+ * em cinza claro sobre branco no modo claro, #161616 sobre preto no escuro.
+ * Sombra é cara em tela pequena — custa contraste em ambiente com sol.
+ */
+@theme {
+  --color-roxo: #8a19d6;
+  --color-roxo-escuro: #7314b3;
+
+  --color-fundo: #ffffff;
+  --color-superficie: #f0f1f5;
+  --color-cinza-forte: #e2e3ea;
+  --color-texto: #000000;
+  --color-texto-suave: #7a7a80;
+  --color-cinza: #f0f1f5;
+
+  --color-faixa-verde: #00dd16;
+  --color-faixa-azul: #009bdd;
+  --color-faixa-laranja: #ff7900;
+
+  --radius-card: 12px;
+  --radius-bloco: 24px;
+  --radius-pill: 999px;
+
+  --font-sans: var(--fonte-montserrat), ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  --color-fundo: #000000;
+  --color-superficie: #161616;
+  --color-cinza-forte: #232323;
+  --color-texto: #ffffff;
+  --color-texto-suave: #9a9aa2;
+  --color-cinza: #161616;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-texto);
+}
+
+/* Foco sempre visível — teclado é caminho de uso, não exceção. */
+:focus-visible {
+  outline: 2px solid var(--color-roxo);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Sobre a faixa roxa o contorno roxo some; inverter para branco. */
+.faixa-roxa :focus-visible {
+  outline-color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
