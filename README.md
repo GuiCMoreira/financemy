@@ -37,7 +37,7 @@ Abra http://localhost:3000. Leva cerca de um minuto na primeira vez.
 Requer Node 22+ e Docker.
 
 ```bash
-cp .env.example .env
+cp .env.example .env    # defina SENHA_ACESSO
 npm install
 npm run db:up
 npm run db:push
@@ -87,6 +87,19 @@ banco ou browser, a regra está na camada errada.
 **Stack:** Next.js 16, React 19, TypeScript, Prisma 7, Postgres, Tailwind 4,
 Vitest.
 
+## Acesso
+
+A instância é protegida por **senha única**, definida em `SENHA_ACESSO`. Não há
+cadastro nem múltiplos usuários: quem tem a senha é o dono dos dados.
+
+Sem a variável definida, a aplicação **não libera nenhuma tela** — exibe um aviso
+de configuração pendente. Um sistema financeiro que abre sozinho porque faltou
+configurar é pior que um que não sobe.
+
+O cookie guarda um token assinado com HMAC derivado da própria senha, então
+**trocar a senha encerra todas as sessões ativas** — exatamente o que se quer
+quando a suspeita é de que alguém a descobriu.
+
 ## Decisões que não são óbvias
 
 **Uma tabela de lançamentos, não quatro.** Receita, conta fixa, parcela e
@@ -118,6 +131,11 @@ relatório sem que ninguém percebesse de onde veio.
 
 **Parcelas somam exatamente o total.** R$ 100 em 3× vira 33,34 + 33,33 + 33,33,
 com o resto na primeira. Dividir e arredondar perderia centavos a cada compra.
+
+**Comparação de senha em tempo constante.** `===` vaza informação pelo tempo de
+resposta: strings que diferem no primeiro caractere retornam mais rápido que as
+que diferem no último, o que permite descobrir o valor caractere a caractere. A
+comparação percorre a string inteira sempre.
 
 **Gráficos em SVG, sem biblioteca.** Rosca, barras e linha somam poucas dezenas
 de linhas cada; bibliotecas do ramo pesam centenas de kilobytes para dar

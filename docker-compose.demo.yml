@@ -24,6 +24,8 @@ services:
     environment:
       DATABASE_URL: "postgresql://caixa:caixa@postgres:5432/caixa?schema=public"
       SEED_DEMO: "true"
+      # Demonstração local. Em uso real, troque por uma senha longa e única.
+      SENHA_ACESSO: "demo"
     ports:
       - "3000:3000"
     depends_on:

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { sair } from '@/app/login/acoes'
 
 const ITENS = [
   { href: '/', rotulo: 'Painel' },
@@ -17,8 +18,13 @@ const ITENS = [
  * Com seis itens, o mobile rola horizontalmente em vez de espremer: rótulo
  * cortado é pior que rolagem, porque o usuário não sabe o que está perdendo.
  */
+/** Telas sem sessão: mostrar menu aqui exibiria links que só redirecionam de volta. */
+const SEM_NAVEGACAO = ['/login', '/configuracao-pendente']
+
 export function Navegacao() {
   const atual = usePathname()
+
+  if (SEM_NAVEGACAO.includes(atual)) return null
 
   const classe = (href: string) =>
     atual === href ? 'text-roxo' : 'text-texto-suave hover:text-texto'
@@ -37,6 +43,11 @@ export function Navegacao() {
             {i.rotulo}
           </Link>
         ))}
+        <form action={sair} className="ml-auto">
+          <button className="text-sm font-medium text-texto-suave hover:text-texto">
+            Sair
+          </button>
+        </form>
       </nav>
 
       <nav className="fixed inset-x-0 bottom-0 z-20 flex overflow-x-auto border-t border-cinza bg-fundo lg:hidden">
