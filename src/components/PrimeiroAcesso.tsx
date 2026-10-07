@@ -22,7 +22,7 @@ export function PrimeiroAcesso() {
     <>
       <header className="faixa-roxa bg-roxo px-6 pt-12 pb-9 lg:px-12 lg:pt-[84px]">
         <p className="mx-auto max-w-lg text-lg font-bold text-white">
-          Bem-vindo ao Caixa
+          Bem-vindo ao FinanceMy
         </p>
       </header>
 

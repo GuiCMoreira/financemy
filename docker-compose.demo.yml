@@ -27,7 +27,8 @@ services:
       # Demonstração local. Em uso real, troque por uma senha longa e única.
       SENHA_ACESSO: "demo"
     ports:
-      - "3000:3000"
+      # Porta do host: `PORTA_DEMO=3100 docker compose ...` se a 3000 estiver ocupada.
+      - "${PORTA_DEMO:-3000}:3000"
     depends_on:
       postgres:
         condition: service_healthy

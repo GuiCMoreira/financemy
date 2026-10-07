@@ -12,7 +12,7 @@ export default function ConfiguracaoPendente() {
 
         <p className="mt-3 text-sm text-texto-suave">
           A variável <code className="font-mono text-texto">SENHA_ACESSO</code> não está
-          definida. Enquanto isso, o Caixa não libera nenhuma tela — seus dados
+          definida. Enquanto isso, o FinanceMy não libera nenhuma tela — seus dados
           financeiros ficariam abertos a quem descobrisse o endereço.
         </p>
 

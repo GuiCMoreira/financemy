@@ -32,7 +32,7 @@ export function Navegacao() {
   return (
     <>
       <nav className="fixed inset-x-0 top-0 z-20 hidden h-[68px] items-center gap-7 bg-fundo px-12 lg:flex">
-        <span className="text-lg font-bold text-roxo">Caixa</span>
+        <span className="text-lg font-bold text-roxo">FinanceMy</span>
         {ITENS.map((i) => (
           <Link
             key={i.href}

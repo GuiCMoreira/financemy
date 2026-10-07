@@ -1,6 +1,6 @@
 <div align="center">
 
-# Caixa
+# FinanceMy
 
 **Controle financeiro pessoal self-hosted.**
 Você sobe a sua instância, seus dados ficam no seu banco, ninguém mais tem acesso.
@@ -12,7 +12,7 @@ Você sobe a sua instância, seus dados ficam no seu banco, ninguém mais tem ac
 ![85 testes](https://img.shields.io/badge/testes-85%20passando-00DD16?style=flat-square)
 ![MIT](https://img.shields.io/badge/licença-MIT-8A19D6?style=flat-square)
 
-![Painel do Caixa](docs/capturas/painel-desktop-claro.png)
+![Painel do FinanceMy](docs/capturas/painel-desktop-claro.png)
 
 </div>
 
@@ -31,7 +31,7 @@ E quando outras pessoas usam o seu cartão, aparece uma segunda pergunta que
 quase nenhum app responde: **quanto da fatura é gasto seu e quanto volta como
 reembolso?**
 
-O Caixa existe para responder essas duas.
+O FinanceMy existe para responder essas duas.
 
 ## O que ele faz
 

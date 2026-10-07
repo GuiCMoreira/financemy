@@ -12,7 +12,7 @@ export default function Login() {
     <main className="grid min-h-dvh place-items-center p-6">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <p className="text-2xl font-bold text-roxo">Caixa</p>
+          <p className="text-2xl font-bold text-roxo">FinanceMy</p>
           <p className="mt-1 text-sm text-texto-suave">Controle financeiro pessoal</p>
         </div>
 

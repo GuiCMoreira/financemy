@@ -11,7 +11,7 @@ const montserrat = Montserrat({
 })
 
 export const metadata = {
-  title: 'Caixa',
+  title: 'FinanceMy',
   description: 'Controle financeiro pessoal self-hosted',
 }
 
