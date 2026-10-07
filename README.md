@@ -3,7 +3,7 @@
 Controle financeiro pessoal self-hosted. Você sobe a sua instância, seus dados
 ficam no seu banco, e ninguém mais tem acesso a eles.
 
-![Painel do Caixa](docs/capturas/painel.png)
+![Painel do Caixa](docs/capturas/painel-desktop-claro.png)
 
 ## O que ele responde
 
@@ -21,17 +21,29 @@ responder:
 
 ## Como rodar
 
+### Experimentar em um comando
+
+Requer apenas Docker. Sobe banco e aplicação, aplica o schema e carrega dados
+de demonstração:
+
+```bash
+docker compose -f docker-compose.demo.yml up
+```
+
+Abra http://localhost:3000. Leva cerca de um minuto na primeira vez.
+
+### Desenvolvimento
+
 Requer Node 22+ e Docker.
 
 ```bash
+cp .env.example .env
 npm install
 npm run db:up
 npm run db:push
 npm run db:seed    # dados de demonstração, opcional
 npm run dev
 ```
-
-Copie `.env.example` para `.env` antes do `db:push`.
 
 | Comando | O que faz |
 |---|---|
@@ -40,6 +52,25 @@ Copie `.env.example` para `.env` antes do `db:push`.
 | `npm run db:up` / `db:down` | Sobe / derruba o Postgres |
 | `npm run db:seed` | Popula com um perfil fictício coerente |
 | `npm run db:studio` | Interface web do banco |
+
+## Telas
+
+| Relatórios | Lançamentos |
+|---|---|
+| ![Relatórios](docs/capturas/relatorios-desktop-claro.png) | ![Lançamentos](docs/capturas/lancamentos-desktop-claro.png) |
+
+Modo escuro e layout de celular:
+
+| Painel escuro | Painel no celular |
+|---|---|
+| ![Painel escuro](docs/capturas/painel-desktop-escuro.png) | ![Painel mobile](docs/capturas/painel-mobile-claro.png) |
+
+As capturas são geradas a partir do seed de demonstração:
+
+```bash
+docker compose -f docker-compose.demo.yml up -d
+npx tsx scripts/capturar.ts
+```
 
 ## Como é por dentro
 

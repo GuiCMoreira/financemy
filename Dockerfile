@@ -21,24 +21,28 @@ RUN npm run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 
-RUN apk add --no-cache postgresql-client tzdata
 ENV TZ=America/Sao_Paulo
 ENV NODE_ENV=production
 
-# O build standalone traz seu próprio node_modules reduzido.
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
+# O node_modules vem inteiro, e não só o bundle standalone, porque o
+# entrypoint aplica o schema e semeia antes de servir — ou seja, precisa da CLI
+# do Prisma e do tsx em tempo de execução. Copiar seletivamente quebra: a CLI
+# arrasta dezenas de dependências transitivas, e a falta de uma só aparece como
+# MODULE_NOT_FOUND no primeiro boot, na máquina de quem clonou o projeto.
+#
+# O custo é uma imagem maior. Para um projeto que precisa subir de primeira em
+# máquina alheia, previsibilidade vale mais que megabytes.
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
-
-# A CLI do Prisma e o seed precisam do schema e do tsx em tempo de execução,
-# porque o entrypoint aplica o schema antes de servir.
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./
-COPY --from=build /app/node_modules/prisma ./node_modules/prisma
-COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=build /app/node_modules/.bin ./node_modules/.bin
-COPY --from=build /app/node_modules/tsx ./node_modules/tsx
-COPY --from=build /app/node_modules/dotenv ./node_modules/dotenv
+# O seed importa os casos de uso de `src/` — precisa do fonte e do tsconfig,
+# que resolve os caminhos `@/`.
+COPY --from=build /app/src ./src
+COPY --from=build /app/tsconfig.json ./
+COPY --from=build /app/package.json ./
+COPY --from=build /app/next.config.ts ./
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
